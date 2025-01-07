@@ -53,6 +53,8 @@ namespace CarPriceReader
             Dictionary<string, decimal> modelTotals = new Dictionary<string, decimal>();
             Dictionary<string, decimal> dphTotals = new Dictionary<string, decimal>();
 
+            
+            
             try
             {
                 // Load XML into a DataSet
@@ -63,6 +65,14 @@ namespace CarPriceReader
                 {
                     DataTable originalTable = dataSet.Tables[0];
 
+                    //Check for predefined column names
+                    string[] requiredColumns = { "Model", "Price", "DPH", "SaleDate" };
+                    var missingColumns = requiredColumns.Where(col => !originalTable.Columns.Contains(col)).ToList();
+
+                    if (missingColumns.Any())
+                    {
+                        throw new Exception($"The XML file does not contain the required columns.");
+                    }
                     foreach (DataRow row in originalTable.Rows)
                     {
                         if (DateTime.TryParse(row["SaleDate"].ToString(), out DateTime saleDate))
